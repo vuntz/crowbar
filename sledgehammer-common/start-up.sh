@@ -17,6 +17,7 @@ is_suse && {
 
 # Figure out where we PXE booted from.
 bootif_re='BOOTIF=([^ ]+)'
+bootvlan_re='BOOTVLAN=([^ ]+)'
 ip_re='inet ([0-9.]+)/([0-9]+)'
 ik_re='crowbar\.install\.key=([^ ]+)'
 if [[ $(cat /proc/cmdline) =~ $bootif_re ]]; then
@@ -58,13 +59,22 @@ if [[ ! $BOOTDEV ]]; then
     MAC=$(cat /sys/class/net/eth0/address)
 fi
 
+if $(cat /proc/cmdline) =~ $bootvlan_re ]]; then
+    BOOTVLAN="${BASH_REMATCH[1]}"
+    VLANBOOTDEV="$BOOTDEV.$BOOTVLAN"
+    ip link add link "$BOOTDEV" name "$VLANBOOTDEV" type vlan id "$BOOTVLAN"
+    DHCPDEV="$VLANBOOTDEV"
+else
+    DHCPDEV="$BOOTDEV"
+fi
+
 killall dhclient && sleep 5
 # Make sure our PXE interface is up, then fire up DHCP on it.
-ip link set "$BOOTDEV" up
-dhclient "$BOOTDEV"
+ip link set "$DHCPDEV" up
+dhclient "$DHCPDEV"
 
-if ! [[ $(ip -4 -o addr show dev $BOOTDEV) =~ $ip_re ]]; then
-    echo "We did not get an address on $BOOTDEV"
+if ! [[ $(ip -4 -o addr show dev $DHCPDEV) =~ $ip_re ]]; then
+    echo "We did not get an address on $DHCPDEV"
     echo "Things will end badly."
 fi
 MYIP="${BASH_REMATCH[1]}"
@@ -107,7 +117,7 @@ done
 # Lagacy protection to make sure that support the old directory structure
 [[ -e /var/log/crowbar/sledgehammer ]] && ln -sf /var/log/crowbar/sledgehammer /install-log
 
-export MAC BOOTDEV ADMIN_IP DOMAIN HOSTNAME HOSTNAME_MAC MYIP
+export MAC BOOTDEV BOOTVLAN DHCPDEV ADMIN_IP DOMAIN HOSTNAME HOSTNAME_MAC MYIP
 
 cd /updates
 cp /updates/control.sh /tmp
