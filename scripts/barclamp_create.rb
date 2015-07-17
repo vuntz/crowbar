@@ -19,13 +19,9 @@
   # the 1st choice is to use the code from the framework since it is most up to date
   # however, that code is not always available when installing
 
-require_dir='/opt/dell/bin'
-
-if ENV["CROWBAR_DIR"]
-  require_dir="#{ENV["CROWBAR_DIR"]}/extra"
-end
-
+require_dir = File.expand_path(File.dirname(__FILE__))
 require "#{require_dir}/barclamp_mgmt_lib.rb"
+
   # this is used by the install-chef installer script 
   if __FILE__ == $0
     bc = ARGV[0]
