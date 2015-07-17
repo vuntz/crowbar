@@ -19,11 +19,9 @@
   # the 1st choice is to use the code from the framework since it is most up to date
   # however, that code is not always available when installing
 
-barclamp_dir='/opt/dell/barclamps'
 require_dir='/opt/dell/bin'
 
 if ENV["CROWBAR_DIR"]
-  barclamp_dir="#{ENV["CROWBAR_DIR"]}/barclamps"
   require_dir="#{ENV["CROWBAR_DIR"]}/extra"
 end
 
@@ -36,7 +34,7 @@ require "#{require_dir}/barclamp_mgmt_lib.rb"
       puts "You must supply a name to create a barclamp"
       exit -3
     end
-    path = ARGV[2] || "#{barclamp_dir}"
+    path = ARGV[2] || BARCLAMP_PATH
     target = File.join path, bc
     
     if File.exist? File.join target, "crowbar.yml"
