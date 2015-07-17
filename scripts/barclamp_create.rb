@@ -31,7 +31,7 @@ require "#{require_dir}/barclamp_mgmt_lib.rb"
   # this is used by the install-chef installer script 
   if __FILE__ == $0
     bc = ARGV[0]
-    org = ARGV[1] || "Dell, Inc."
+    org = ARGV[1] || "Crowbar Project"
     if bc.nil? or bc == ""
       puts "You must supply a name to create a barclamp"
       exit -3
