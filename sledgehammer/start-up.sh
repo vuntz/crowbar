@@ -109,6 +109,6 @@ done
 
 export MAC BOOTDEV ADMIN_IP DOMAIN HOSTNAME HOSTNAME_MAC MYIP
 
-cd /updates
-cp /updates/control.sh /tmp
+cd /usr/lib/crowbar/sledgehammer
+cp /usr/lib/crowbar/sledgehammer/control.sh /tmp
 /tmp/control.sh
