@@ -575,16 +575,6 @@ if ! is_ses; then
                 /srv/tftpboot/suse-12.1/$arch/repos/Cloud \
                 #1558be86e7354d31e71e7c8c2574031a
         fi
-
-        check_repo_tag repo    12.1 $arch SLES12-SP1-Pool                     "obsproduct://build.suse.de/SUSE:SLE-12-SP1:GA/SLES/12.1/POOL/$arch"
-        check_repo_tag repo    12.1 $arch SLES12-SP1-Updates                  "obsrepository://build.suse.de/SUSE:Updates:SLE-SERVER:12-SP1:$arch/update"
-        check_repo_tag repo    12.1 $arch SUSE-OpenStack-Cloud-6-Pool         "obsproduct://build.suse.de/SUSE:SLE-12:SP1:Products:Cloud6/suse-openstack-cloud/6/POOL/$arch" $REQUIRE_CLOUD
-        check_repo_tag repo    12.1 $arch SUSE-OpenStack-Cloud-6-Updates      "obsrepository://build.suse.de/SUSE:Updates:OpenStack-Cloud:6:$arch/update" $REQUIRE_CLOUD
-        # HA is s390x/x86_64 only
-        if [ $arch == x86_64 -o $arch == s390x ]; then
-            check_repo_tag repo    12.1 $arch SLE12-SP1-HA-Pool                   "obsproduct://build.suse.de/SUSE:SLE-12-SP1:GA/sle-ha/12.1/POOL/$arch" 'false'
-            check_repo_tag repo    12.1 $arch SLE12-SP1-HA-Updates                "obsrepository://build.suse.de/SUSE:Updates:SLE-HA:12-SP1:$arch/update" 'false'
-        fi
     done
 fi
 
@@ -598,11 +588,6 @@ for arch in $supported_arches_ses; do
             b52c0f2b41a6a10d49cc89edcdc1b13d
 
         check_media_links $MEDIA
-
-        check_repo_tag repo    12.0 $arch SLES12-Pool                       "obsproduct://build.suse.de/SUSE:SLE-12:GA/SLES/12/POOL/$arch" $REQUIRE_STORAGE
-        check_repo_tag repo    12.0 $arch SLES12-Updates                    "obsrepository://build.suse.de/SUSE:Updates:SLE-SERVER:12:$arch/update" $REQUIRE_STORAGE
-        check_repo_tag repo    12.0 $arch SUSE-Enterprise-Storage-2-Pool    "obsproduct://build.suse.de/SUSE:SLE-12:Update:Products:SES2/ses/2/POOL/$arch" $REQUIRE_STORAGE
-        check_repo_tag repo    12.0 $arch SUSE-Enterprise-Storage-2-Updates "obsrepository://build.suse.de/SUSE:Updates:Storage:2:$arch/update" $REQUIRE_STORAGE
     fi
 done
 
@@ -662,14 +647,6 @@ if [ -n "$CROWBAR_FROM_GIT" ]; then
 
     # also need these (crowbar dependencies):
     zypper -n in sleshammer tcpdump
-
-    # create Compatibility link /tftpboot -> /srv/tftpboot (this is part of
-    # the crowbar package when not in $CROWBAR_FROM_GIT)
-    if ! [ -e /tftpboot ]; then
-        ln -s /srv/tftpboot /tftpboot
-    elif [ "$( /usr/bin/readlink /tftpboot )" != "/srv/tftpboot" ]; then
-        die "/tftpboot exist but is not a symbolic link to /srv/tftpboot. Please fix!"
-    fi
 
     # log directory needs to exist
     mkdir -p /var/log/crowbar
